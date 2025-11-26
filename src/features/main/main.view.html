@@ -1,4 +1,4 @@
 <div class="main-component">
   <input type="text" ng-model="value">
-  <p class="validity-message" ng-class="{ 'success': valueValidity().success, 'error': !valueValidity().success }">{{ valueValidity().errorMessage }}</p>
+  <p class="validity-message" ng-class="{ 'success': valueValidity().success, 'error': !valueValidity().success }">{{ valueValidity().message }}</p>
 </div>

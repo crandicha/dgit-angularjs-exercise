@@ -1,7 +1,7 @@
 import { app } from "../../app/app.module";
 import template from "./main.view.html";
 import "./main.component.css";
-import { isValidACNInput, isValidACNNumber } from "../../utils/ACN";
+import { VALIDATIONS } from "../../utils/validation";
 import { VALID_ACN_LENGTH } from "../../config/ACN";
 
 app.directive("mainComponent", function () {
@@ -12,15 +12,24 @@ app.directive("mainComponent", function () {
     controller: function ($scope) {
       $scope.value = "";
       $scope.validations = [
-        { validator: isValidACNInput, errorMessage: "Invalid ACN input" },
-        { validator: isValidACNNumber, errorMessage: "Invalid ACN number" },
+        VALIDATIONS.minLength({ parameters: { minLength: VALID_ACN_LENGTH } }),
+        VALIDATIONS.maxLength({
+          parameters: { maxLength: VALID_ACN_LENGTH },
+        }),
+        VALIDATIONS.whitespaceEveryNthCharacter({
+          parameters: { nthCharacter: 3 },
+        }),
+        VALIDATIONS.numberOnly(),
+        VALIDATIONS.isValidACNNumber(),
       ];
       $scope.valueValidity = () => {
-        const errorMessage = $scope.validations.find(
+        if ($scope.value === "") return { success: false, message: "" };
+        const message = $scope.validations.find(
           (validation) => !validation.validator($scope.value)
-        )?.errorMessage;
-        if (errorMessage) return { success: false, errorMessage };
-        return { success: true, errorMessage: "Valid ACN number" };
+        )?.message;
+
+        if (message) return { success: false, message };
+        return { success: true, message: "Valid ACN number" };
       };
     },
   };

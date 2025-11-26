@@ -1,6 +1,7 @@
 import angular from "angular";
 import { app } from "../../app/app.module";
-import { VALID_ACN_NUMBER_EXAMPLE } from "../../config/ACN";
+import { VALID_ACN_NUMBER_EXAMPLE, VALID_ACN_LENGTH } from "../../config/ACN";
+import { VALIDATIONS } from "../../utils/validation";
 
 describe("mainComponent", () => {
   let $compile;
@@ -32,44 +33,56 @@ describe("mainComponent", () => {
   describe("initialization", () => {
     it("should initialize with empty value", () => {
       expect(input.val()).toBe("");
-      expect(validityMessage.text()).toBe("Invalid ACN input");
+      expect(validityMessage.text()).toBe("");
     });
   });
 
   describe("valueValidity", () => {
-    it("should return 'Invalid ACN input' for empty value", () => {
+    it("should return empty string for empty value", () => {
       typeIntoInput("");
-      expect(validityMessage.text()).toBe("Invalid ACN input");
+      expect(validityMessage.text()).toBe("");
     });
 
-    it("should return 'Invalid ACN input' for non-numeric input", () => {
+    it("should return numberOnly error for non-numeric input", () => {
       typeIntoInput("12345678a");
-      expect(validityMessage.text()).toBe("Invalid ACN input");
+      const expectedMessage = VALIDATIONS.numberOnly().message;
+      expect(validityMessage.text()).toBe(expectedMessage);
     });
 
-    it("should return 'Invalid ACN input' for input with wrong length", () => {
+    it("should return minLength error for input with wrong length (too short)", () => {
       typeIntoInput("12345678");
-      expect(validityMessage.text()).toBe("Invalid ACN input");
+      const expectedMessage = VALIDATIONS.minLength({
+        parameters: { minLength: VALID_ACN_LENGTH },
+      }).message;
+      expect(validityMessage.text()).toBe(expectedMessage);
     });
 
-    it("should return 'Invalid ACN input' for input with wrong length (too long)", () => {
+    it("should return maxLength error for input with wrong length (too long)", () => {
       typeIntoInput("1234567890");
-      expect(validityMessage.text()).toBe("Invalid ACN input");
+      const expectedMessage = VALIDATIONS.maxLength({
+        parameters: { maxLength: VALID_ACN_LENGTH },
+      }).message;
+      expect(validityMessage.text()).toBe(expectedMessage);
     });
 
-    it("should return 'Invalid ACN input' for input with invalid whitespace pattern", () => {
+    it("should return whitespace error for input with invalid whitespace pattern", () => {
       typeIntoInput("12 345 6789");
-      expect(validityMessage.text()).toBe("Invalid ACN input");
+      const expectedMessage = VALIDATIONS.whitespaceEveryNthCharacter({
+        parameters: { nthCharacter: 3 },
+      }).message;
+      expect(validityMessage.text()).toBe(expectedMessage);
     });
 
-    it("should return 'Invalid ACN number' for valid input but invalid checksum", () => {
+    it("should return ACN validation error for valid input but invalid checksum", () => {
       typeIntoInput("123456789");
-      expect(validityMessage.text()).toBe("Invalid ACN number");
+      const expectedMessage = VALIDATIONS.isValidACNNumber().message;
+      expect(validityMessage.text()).toBe(expectedMessage);
     });
 
-    it("should return 'Invalid ACN number' for valid input format but invalid checksum (with whitespace)", () => {
+    it("should return ACN validation error for valid input format but invalid checksum (with whitespace)", () => {
       typeIntoInput("123 456 789");
-      expect(validityMessage.text()).toBe("Invalid ACN number");
+      const expectedMessage = VALIDATIONS.isValidACNNumber().message;
+      expect(validityMessage.text()).toBe(expectedMessage);
     });
 
     it("should return 'Valid ACN number' for valid ACN number without whitespace", () => {
