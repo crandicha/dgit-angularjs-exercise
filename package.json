@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "live-server src",
+    "start": "webpack serve",
     "build": "webpack"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "angular": "^1.8.3"
+    "angular": "^1.8.3",
+    "raw-loader": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",

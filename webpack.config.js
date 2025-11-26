@@ -15,6 +15,10 @@ module.exports = {
         exclude: /node_modules/,
         use: "babel-loader",
       },
+      {
+        test: /\.html$/,
+        use: "raw-loader",
+      },
     ],
   },
   plugins: [
