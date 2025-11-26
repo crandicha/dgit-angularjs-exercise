@@ -25,6 +25,10 @@ module.exports = function (config) {
             test: /\.html$/,
             use: "raw-loader",
           },
+          {
+            test: /\.css$/,
+            use: ["style-loader", "css-loader"],
+          },
         ],
       },
     },

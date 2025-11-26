@@ -1,5 +1,6 @@
 import { app } from "../../app/app.module";
 import template from "./main.view.html";
+import "./main.component.css";
 import { isValidACNInput, isValidACNNumber } from "../../utils/ACN";
 import { VALID_ACN_LENGTH } from "../../config/ACN";
 
@@ -15,7 +16,8 @@ app.component("mainComponent", {
       const errorMessage = this.validations.find(
         (validation) => !validation.validator(this.value)
       )?.errorMessage;
-      return errorMessage || "Valid ACN number";
+      if (errorMessage) return { success: false, errorMessage };
+      return { success: true, errorMessage: "Valid ACN number" };
     };
   },
 });
