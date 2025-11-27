@@ -128,47 +128,69 @@ describe("VALIDATIONS", () => {
   });
 
   describe("whitespaceEveryNthCharacter", () => {
-    it("should return true when there is no whitespace", () => {
+    it("should return true when there is no whitespace (any length)", () => {
       const validation = VALIDATIONS.whitespaceEveryNthCharacter({
         parameters: { nthCharacter: 3 },
       });
       expect(validation.validator("123456789")).toBe(true);
+      expect(validation.validator("123")).toBe(true);
+      expect(validation.validator("12345")).toBe(true);
+      expect(validation.validator("1")).toBe(true);
+      expect(validation.validator("12345678901234567890")).toBe(true);
     });
 
     it("should return true when whitespace is correctly placed every 3rd character", () => {
       const validation = VALIDATIONS.whitespaceEveryNthCharacter({
         parameters: { nthCharacter: 3 },
       });
+      expect(validation.validator("123 456")).toBe(true);
       expect(validation.validator("123 456 789")).toBe(true);
+      expect(validation.validator("123 456 789 012")).toBe(true);
     });
 
-    it("should return false when whitespace is incorrectly placed", () => {
+    it("should return false when whitespace is incorrectly placed at wrong positions", () => {
       const validation = VALIDATIONS.whitespaceEveryNthCharacter({
         parameters: { nthCharacter: 3 },
       });
       expect(validation.validator("12 345 6789")).toBe(false);
+      expect(validation.validator("1234 567 890")).toBe(false);
     });
 
-    it("should return false when there are too many segments", () => {
+    it("should return false when segments have inconsistent lengths", () => {
       const validation = VALIDATIONS.whitespaceEveryNthCharacter({
         parameters: { nthCharacter: 3 },
       });
-      expect(validation.validator("123 456 789 012")).toBe(false);
+      expect(validation.validator("12 456 789")).toBe(false);
+      expect(validation.validator("123 45 789")).toBe(false);
+      expect(validation.validator("123 456 78")).toBe(false);
     });
 
-    it("should return false when segments are too short", () => {
+    it("should return false when there are multiple consecutive spaces", () => {
       const validation = VALIDATIONS.whitespaceEveryNthCharacter({
         parameters: { nthCharacter: 3 },
       });
-      expect(validation.validator("12 45 78")).toBe(false);
+      expect(validation.validator("123  456")).toBe(false);
+      expect(validation.validator("123   456")).toBe(false);
+    });
+
+    it("should return false when spaces are at the beginning or end", () => {
+      const validation = VALIDATIONS.whitespaceEveryNthCharacter({
+        parameters: { nthCharacter: 3 },
+      });
+      expect(validation.validator(" 123 456")).toBe(false);
+      expect(validation.validator("123 456 ")).toBe(false);
     });
 
     it("should work with different nthCharacter values", () => {
       const validation = VALIDATIONS.whitespaceEveryNthCharacter({
         parameters: { nthCharacter: 4 },
       });
+      expect(validation.validator("1234")).toBe(true); // no space, valid
+      expect(validation.validator("1234 5678")).toBe(true);
       expect(validation.validator("1234 5678 9012")).toBe(true);
-      expect(validation.validator("123 456 789")).toBe(false);
+      expect(validation.validator("123 456 789")).toBe(false); // wrong length segments
+      expect(validation.validator("123 4567 8901")).toBe(false); // inconsistent segments
+      expect(validation.validator("1234 567 890")).toBe(false); // second segment too short
     });
 
     it("should use default nthCharacter of 3 when no parameter is provided", () => {

@@ -21,9 +21,7 @@ export const VALIDATIONS = {
       validator: (value) => {
         if (!value.includes(" ")) return true;
         return !!value.match(
-          new RegExp(
-            `^\\w{${nthCharacter}} \\w{${nthCharacter}} \\w{${nthCharacter}}$`
-          )
+          new RegExp(`^\\w{${nthCharacter}}( \\w{${nthCharacter}})*$`)
         );
       },
       message:
@@ -32,7 +30,7 @@ export const VALIDATIONS = {
     };
   },
   numberOnly: ({ customMessage } = {}) => ({
-    validator: (value) => !isNaN(value.replaceAll(" ", "")),
+    validator: (value) => !isNaN(Number(value.replaceAll(" ", ""))),
     message: customMessage || "Value must be a number",
   }),
   isValidACNNumber: ({ customMessage } = {}) => ({
